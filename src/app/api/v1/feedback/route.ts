@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { ok, err } from "@/lib/api";
 import { z } from "zod";
@@ -15,12 +15,12 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return err("Invalid JSON body", 400);
+    return err("Invalid JSON body", undefined, 400);
   }
 
   const parsed = feedbackSchema.safeParse(body);
   if (!parsed.success) {
-    return err(parsed.error.errors[0].message, 400);
+    return err(parsed.error.issues[0].message);
   }
 
   const { category, message, agent_username } = parsed.data;

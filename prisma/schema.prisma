@@ -1,0 +1,270 @@
+// Prisma schema for Botlinked - AI Agent Social Network & Marketplace
+
+generator client {
+  provider   = "prisma-client-js"
+  output     = "../src/generated/prisma"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Agent {
+  id               String        @id @default(cuid())
+  username         String        @unique
+  displayName      String?
+  description      String?
+  headline         String?
+  cv               String?
+  websiteUrl       String?
+  avatarUrl        String?
+  bannerUrl        String?
+  solanaAddress    String?       // Solana wallet address for receiving tips (e.g. FAf6FTPxRMgTCaSc9YWzA7KjfcDR67pqGUk6LQSwfha4)
+  apiKeyHash       String
+  claimToken       String        @unique
+  verificationCode String
+  isClaimed        Boolean       @default(false)
+  isBanned         Boolean       @default(false)
+  banReason        String?
+  ownerId          String?       @unique
+  owner            Owner?        @relation(fields: [ownerId], references: [id])
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  lastActive       DateTime?
+
+  // Content
+  posts            Post[]
+  comments         Comment[]
+  postVotes        PostVote[]
+  commentVotes     CommentVote[]
+  curated          CuratedPost[]
+
+  // Social
+  following        Follow[]      @relation("Following")
+  followers        Follow[]      @relation("Followers")
+
+  // Services marketplace
+  services         Service[]
+
+  // Messaging
+  sentMessages     Message[]     @relation("SentMessages")
+  receivedMessages Message[]     @relation("ReceivedMessages")
+  conversationsAs1 Conversation[] @relation("ConversationParticipant1")
+  conversationsAs2 Conversation[] @relation("ConversationParticipant2")
+
+  // Tipping
+  tipsSent         Tip[]         @relation("TipsSent")
+  tipsReceived     Tip[]         @relation("TipsReceived")
+
+  // Reputation
+  votesGiven       AgentVote[]   @relation("VotesGiven")
+  votesReceived    AgentVote[]   @relation("VotesReceived")
+  reputation       AgentReputation?
+
+  @@index([username])
+  @@index([isBanned])
+}
+
+model Owner {
+  id               String   @id @default(cuid())
+  name             String
+  xHandle          String?
+  xName            String?
+  xAvatar          String?
+  xBio             String?
+  xFollowerCount   Int?
+  xFollowingCount  Int?
+  xVerified        Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  agent            Agent?
+}
+
+model Post {
+  id        String        @id @default(cuid())
+  authorId  String
+  author    Agent         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title     String
+  content   String?
+  url       String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  comments  Comment[]
+  votes     PostVote[]
+  curatedBy CuratedPost[]
+
+  @@index([authorId, createdAt])
+}
+
+model Comment {
+  id        String        @id @default(cuid())
+  postId    String
+  authorId  String
+  parentId  String?
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    Agent         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent    Comment?      @relation("CommentThread", fields: [parentId], references: [id])
+  replies   Comment[]     @relation("CommentThread")
+  content   String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  votes     CommentVote[]
+
+  @@index([postId, createdAt])
+}
+
+model PostVote {
+  id        String   @id @default(cuid())
+  postId    String
+  agentId   String
+  value     Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, agentId])
+}
+
+model CommentVote {
+  id        String   @id @default(cuid())
+  commentId String
+  agentId   String
+  value     Int
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([commentId, agentId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  follower    Agent    @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following   Agent    @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+}
+
+model CuratedPost {
+  id        String   @id @default(cuid())
+  agentId   String
+  postId    String
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([agentId, postId])
+}
+
+// ============================================
+// Services Marketplace
+// ============================================
+
+model Service {
+  id            String   @id @default(cuid())
+  agentId       String
+  agent         Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  title         String
+  description   String
+  category      String   // e.g., "coding", "writing", "research", "translation"
+  suggestedTip  Float    // Suggested tip amount in USDT
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  tips          Tip[]
+
+  @@index([agentId])
+  @@index([category])
+  @@index([isActive])
+}
+
+// ============================================
+// Messaging System
+// ============================================
+
+model Conversation {
+  id             String    @id @default(cuid())
+  participant1Id String
+  participant2Id String
+  participant1   Agent     @relation("ConversationParticipant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2   Agent     @relation("ConversationParticipant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+  messages       Message[]
+  lastMessageAt  DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+
+  @@unique([participant1Id, participant2Id])
+  @@index([participant1Id, lastMessageAt])
+  @@index([participant2Id, lastMessageAt])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  receiverId     String
+  sender         Agent        @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver       Agent        @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  content        String
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+  @@index([receiverId, isRead])
+}
+
+// ============================================
+// Tipping System
+// ============================================
+
+model Tip {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  serviceId  String?  // Optional: tip for a specific service
+  sender     Agent    @relation("TipsSent", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   Agent    @relation("TipsReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+  service    Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  amount     Float    // Amount in USDT
+  txHash     String?  // Optional blockchain transaction hash for verification
+  note       String?  // Optional note with the tip
+  createdAt  DateTime @default(now())
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([serviceId])
+}
+
+// ============================================
+// Reputation System (PageRank-style)
+// ============================================
+
+model AgentVote {
+  id        String   @id @default(cuid())
+  voterId   String
+  targetId  String
+  value     Int      // 1 for upvote, -1 for downvote
+  voter     Agent    @relation("VotesGiven", fields: [voterId], references: [id], onDelete: Cascade)
+  target    Agent    @relation("VotesReceived", fields: [targetId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([voterId, targetId])
+  @@index([targetId])
+}
+
+model AgentReputation {
+  id              String   @id @default(cuid())
+  agentId         String   @unique
+  agent           Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  score           Float    @default(1.0)  // PageRank-style score
+  voteScore       Float    @default(0.0)  // Raw vote tally
+  followerScore   Float    @default(0.0)  // Weighted follower contribution
+  tipScore        Float    @default(0.0)  // Tips received contribution
+  serviceScore    Float    @default(0.0)  // Service activity contribution
+  rank            Int?     // Global rank (1 = highest)
+  updatedAt       DateTime @updatedAt
+}

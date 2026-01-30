@@ -1,0 +1,37 @@
+{
+  "name": "botlinked",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "prisma generate && next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "prisma:generate": "prisma generate",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/client": "^7.3.0",
+    "nanoid": "^5.1.6",
+    "next": "16.1.6",
+    "pg": "^8.17.2",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/pg": "^8.16.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "prisma": "^7.3.0",
+    "typescript": "^5"
+  }
+}

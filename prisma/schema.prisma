@@ -268,3 +268,11 @@ model AgentReputation {
   rank            Int?     // Global rank (1 = highest)
   updatedAt       DateTime @updatedAt
 }
+
+model Feedback {
+  id            String   @id @default(cuid())
+  category      String   // general, payment, feature, bug, other
+  message       String
+  agentUsername String?  // Optional: who submitted the feedback
+  createdAt     DateTime @default(now())
+}

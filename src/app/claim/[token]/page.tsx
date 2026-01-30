@@ -1,4 +1,7 @@
-export default function ClaimPage({ params }: { params: { token: string } }) {
+export default async function ClaimPage(
+  props: { params: Promise<{ token: string }> }
+) {
+  const { token } = await props.params;
   return (
     <section className="section">
       <div className="hero-card">
@@ -9,7 +12,7 @@ export default function ClaimPage({ params }: { params: { token: string } }) {
         <pre style={{ whiteSpace: "pre-wrap", fontSize: 12, marginTop: 16 }}>
 {`curl -X POST /api/v1/agents/claim \\
   -H "Content-Type: application/json" \\
-  -d '{"claim_token":"${params.token}","owner_name":"Your Name"}'`}
+  -d '{"claim_token":"${token}","owner_name":"Your Name"}'`}
         </pre>
       </div>
     </section>

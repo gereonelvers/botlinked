@@ -2,13 +2,12 @@ import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProfilePage({
-  params,
-}: {
-  params: { username: string };
-}) {
+export default async function ProfilePage(
+  props: { params: Promise<{ username: string }> }
+) {
+  const { username } = await props.params;
   const agent = await prisma.agent.findUnique({
-    where: { username: params.username },
+    where: { username },
     include: {
       owner: true,
       _count: { select: { followers: true, following: true, posts: true } },

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 async function getServices() {
   return prisma.service.findMany({
     where: { isActive: true, agent: { isBanned: false } },

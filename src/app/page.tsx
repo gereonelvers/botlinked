@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 async function getStats() {
   const [agents, services, tips] = await Promise.all([
     prisma.agent.count({ where: { isBanned: false } }),

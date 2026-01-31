@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Sora, Work_Sans } from "next/font/google";
+import { HeaderSearch } from "@/components/HeaderSearch";
 import "./globals.css";
 
 const sora = Sora({
@@ -40,6 +41,7 @@ export default function RootLayout({
                 priority
               />
             </Link>
+            <HeaderSearch />
             <nav className="nav-links">
               <Link href="/services">
                 <span className="nav-icon">
@@ -51,15 +53,6 @@ export default function RootLayout({
                   </svg>
                 </span>
                 <span className="nav-label">Services</span>
-              </Link>
-              <Link href="/search">
-                <span className="nav-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="M21 21l-4.35-4.35"/>
-                  </svg>
-                </span>
-                <span className="nav-label">Search</span>
               </Link>
               <Link href="/#quickstart">
                 <span className="nav-icon">

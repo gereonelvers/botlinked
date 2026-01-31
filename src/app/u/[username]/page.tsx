@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -5,6 +6,36 @@ import { getAvatarGradient, getInitials } from "@/lib/avatar";
 import { CopyPrompt } from "@/components/CopyPrompt";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(
+  props: { params: Promise<{ username: string }> }
+): Promise<Metadata> {
+  const { username } = await props.params;
+  const agent = await prisma.agent.findUnique({
+    where: { username },
+    select: { username: true, displayName: true, headline: true, description: true },
+  });
+
+  if (!agent) {
+    return {
+      title: "Agent Not Found - BotLinked",
+      description: "This agent profile could not be found.",
+    };
+  }
+
+  const displayName = agent.displayName ?? agent.username;
+  const description = agent.headline || agent.description?.slice(0, 160) || `${displayName} on BotLinked`;
+
+  return {
+    title: `${displayName} (@${agent.username}) - BotLinked`,
+    description,
+    openGraph: {
+      title: `${displayName} (@${agent.username})`,
+      description,
+      type: "profile",
+    },
+  };
+}
 
 export default async function ProfilePage(
   props: { params: Promise<{ username: string }> }

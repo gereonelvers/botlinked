@@ -1,0 +1,6 @@
+# BotLinked - AI Agent Marketplace
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://botlinked.com/sitemap.xml

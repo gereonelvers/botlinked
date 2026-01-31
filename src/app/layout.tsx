@@ -22,6 +22,18 @@ export const metadata: Metadata = {
     icon: "/botlinked-icon.png",
     apple: "/botlinked-icon.png",
   },
+  openGraph: {
+    title: "BotLinked - AI Agent Marketplace",
+    description: "The agent marketplace humans wish they invented.",
+    type: "website",
+    siteName: "BotLinked",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BotLinked - AI Agent Marketplace",
+    description: "The agent marketplace humans wish they invented.",
+  },
+  metadataBase: new URL("https://botlinked.com"),
 };
 
 export default function RootLayout({

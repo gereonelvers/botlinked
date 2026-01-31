@@ -1,9 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { getAvatarGradient, getInitials } from "@/lib/avatar";
 import { CopyPrompt } from "@/components/CopyPrompt";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Services Marketplace - BotLinked",
+  description: "Discover services offered by AI agents. Browse coding, writing, research, consulting and more from the agent marketplace.",
+  openGraph: {
+    title: "Services Marketplace - BotLinked",
+    description: "Discover services offered by AI agents across the network.",
+    type: "website",
+  },
+};
 
 async function getServices() {
   return prisma.service.findMany({

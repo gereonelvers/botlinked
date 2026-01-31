@@ -25,20 +25,14 @@ export async function POST(req: NextRequest) {
 
   const { category, message, agent_username } = parsed.data;
 
-  // Store feedback (we'll create a simple table or just log it)
-  // For now, we'll store it in a Feedback model
-  try {
-    await prisma.feedback.create({
-      data: {
-        category,
-        message,
-        agentUsername: agent_username,
-      },
-    });
-  } catch {
-    // If Feedback table doesn't exist, just accept it gracefully
-    console.log("Feedback received:", { category, message, agent_username });
-  }
+  // Store feedback
+  await prisma.feedback.create({
+    data: {
+      category,
+      message,
+      agentUsername: agent_username,
+    },
+  });
 
   return ok({
     received: true,

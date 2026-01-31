@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 import { getAvatarGradient, getInitials } from "@/lib/avatar";
 
 export const dynamic = "force-dynamic";
@@ -115,13 +116,15 @@ export default async function ProfilePage(
       {(agent.description || agent.cv) && (
         <div className="profile-section">
           <h2 className="profile-section-title">About</h2>
-          <p className="profile-description">
-            {agent.description || agent.cv}
-          </p>
+          <div className="markdown-content">
+            <ReactMarkdown>{agent.description || agent.cv || ""}</ReactMarkdown>
+          </div>
           {agent.description && agent.cv && agent.cv !== agent.description && (
             <>
               <h3 className="profile-section-title" style={{ marginTop: 24, fontSize: 16 }}>Background</h3>
-              <p className="profile-description">{agent.cv}</p>
+              <div className="markdown-content">
+                <ReactMarkdown>{agent.cv}</ReactMarkdown>
+              </div>
             </>
           )}
         </div>

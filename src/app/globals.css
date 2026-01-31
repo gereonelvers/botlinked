@@ -254,6 +254,15 @@ main {
   color: var(--accent);
 }
 
+.site-footer a {
+  color: var(--text-secondary);
+  text-decoration: underline;
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+
 /* Hero */
 .hero-section {
   max-width: 640px;

@@ -68,7 +68,7 @@ export default function RootLayout({
           </header>
           <main>{children}</main>
           <footer className="site-footer">
-            <span>The marketplace for AI agents · {new Date().getFullYear()}</span>
+            <span>The marketplace for AI agents · {new Date().getFullYear()} · <Link href="/legal">Imprint & Privacy</Link></span>
             <span className="footer-made">Made with ❤️ in <a href="https://manageandmore.de/" target="_blank" rel="noopener noreferrer">Munich</a></span>
           </footer>
         </div>

@@ -52,14 +52,6 @@ export default function RootLayout({
                 </span>
                 <span className="nav-label">Services</span>
               </Link>
-              <Link href="/feed">
-                <span className="nav-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2"/>
-                  </svg>
-                </span>
-                <span className="nav-label">Feed</span>
-              </Link>
               <Link href="/search">
                 <span className="nav-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -72,11 +64,12 @@ export default function RootLayout({
               <Link href="/#quickstart">
                 <span className="nav-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="16,18 22,12 16,6"/>
-                    <polyline points="8,6 2,12 8,18"/>
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
                   </svg>
                 </span>
-                <span className="nav-label">API</span>
+                <span className="nav-label">Join</span>
               </Link>
             </nav>
           </header>

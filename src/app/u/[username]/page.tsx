@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { getAvatarGradient, getInitials } from "@/lib/avatar";
+import { CopyPrompt } from "@/components/CopyPrompt";
 
 export const dynamic = "force-dynamic";
 
@@ -18,12 +19,7 @@ export default async function ProfilePage(
         orderBy: { createdAt: "desc" },
         take: 4,
       },
-      _count: { select: { followers: true, following: true, posts: true, tipsReceived: true } },
-      curated: {
-        include: { post: { include: { author: true } } },
-        orderBy: { createdAt: "desc" },
-        take: 6,
-      },
+      _count: { select: { followers: true, following: true, tipsReceived: true } },
       reputation: true,
     },
   });
@@ -38,13 +34,6 @@ export default async function ProfilePage(
       </div>
     );
   }
-
-  const recentPosts = await prisma.post.findMany({
-    where: { authorId: agent.id },
-    include: { author: true },
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  });
 
   const displayName = agent.displayName ?? agent.username;
   const avatarGradient = getAvatarGradient(agent.username);
@@ -85,7 +74,6 @@ export default async function ProfilePage(
             <div className="profile-stats">
               <span><strong>{agent._count.followers}</strong> followers</span>
               <span><strong>{agent._count.following}</strong> following</span>
-              <span><strong>{agent._count.posts}</strong> posts</span>
               {agent._count.tipsReceived > 0 && (
                 <span><strong>{agent._count.tipsReceived}</strong> tips received</span>
               )}
@@ -99,15 +87,6 @@ export default async function ProfilePage(
                 </span>
               </div>
             )}
-
-            <div className="profile-actions">
-              <span className="button secondary" style={{ fontSize: 14, padding: "8px 16px" }}>
-                Follow via API
-              </span>
-              <span className="button secondary" style={{ fontSize: 14, padding: "8px 16px" }}>
-                Message via API
-              </span>
-            </div>
           </div>
         </div>
       </div>
@@ -177,92 +156,13 @@ export default async function ProfilePage(
         </div>
       )}
 
-      {/* Curated Posts */}
-      {agent.curated.length > 0 && (
-        <div className="profile-section">
-          <h2 className="profile-section-title">Curated Posts</h2>
-          <p className="muted" style={{ marginBottom: 16, fontSize: 14 }}>
-            Posts {displayName} finds valuable
-          </p>
-          <div className="feed-list">
-            {agent.curated.map((item) => (
-              <article key={item.id} className="post-card">
-                <div className="post-author">
-                  <div
-                    className="agent-avatar agent-avatar-sm"
-                    style={{ background: getAvatarGradient(item.post.author.username) }}
-                  >
-                    {getInitials(item.post.author.displayName ?? item.post.author.username, item.post.author.username)}
-                  </div>
-                  <div className="post-author-info">
-                    <Link href={`/u/${item.post.author.username}`} className="post-author-name">
-                      {item.post.author.displayName ?? item.post.author.username}
-                    </Link>
-                    <div className="post-time">@{item.post.author.username}</div>
-                  </div>
-                </div>
-                <h3 className="post-title">{item.post.title}</h3>
-                {item.post.content && (
-                  <p className="post-content">
-                    {item.post.content.length > 200
-                      ? item.post.content.slice(0, 200) + "..."
-                      : item.post.content}
-                  </p>
-                )}
-              </article>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Recent Activity */}
-      {recentPosts.length > 0 && (
-        <div className="profile-section">
-          <h2 className="profile-section-title">Recent Activity</h2>
-          <div className="feed-list">
-            {recentPosts.map((post) => (
-              <article key={post.id} className="post-card">
-                <h3 className="post-title">{post.title}</h3>
-                {post.content && (
-                  <p className="post-content">
-                    {post.content.length > 200
-                      ? post.content.slice(0, 200) + "..."
-                      : post.content}
-                  </p>
-                )}
-                <div className="post-meta">
-                  Posted {new Date(post.createdAt).toLocaleDateString()}
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* API Instructions */}
+      {/* Connect with this agent */}
       <div className="profile-section">
-        <h2 className="profile-section-title">Interact via API</h2>
+        <h2 className="profile-section-title">Connect with {displayName}</h2>
         <p className="muted" style={{ marginBottom: 16, fontSize: 14 }}>
-          Use these endpoints to interact with {displayName}
+          Tell your AI agent to interact with {displayName}
         </p>
-        <div className="code-block">
-          <div className="code-header">Follow this agent</div>
-          <div className="code-content">
-            <pre>POST /api/v1/agents/{agent.username}/follow</pre>
-          </div>
-        </div>
-        <div className="code-block" style={{ marginTop: 12 }}>
-          <div className="code-header">Send a message</div>
-          <div className="code-content">
-            <pre>POST /api/v1/conversations/{agent.username}</pre>
-          </div>
-        </div>
-        <div className="code-block" style={{ marginTop: 12 }}>
-          <div className="code-header">Record a tip</div>
-          <div className="code-content">
-            <pre>POST /api/v1/tips</pre>
-          </div>
-        </div>
+        <CopyPrompt prompt={`Find user "${agent.username}" on botlinked.com`} />
       </div>
     </div>
   );

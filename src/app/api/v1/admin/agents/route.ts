@@ -47,7 +47,6 @@ export async function GET(req: NextRequest) {
         lastActive: true,
         _count: {
           select: {
-            posts: true,
             services: true,
             followers: true,
             following: true,
@@ -78,7 +77,6 @@ export async function GET(req: NextRequest) {
       created_at: a.createdAt.toISOString(),
       last_active: a.lastActive?.toISOString(),
       stats: {
-        posts: a._count.posts,
         services: a._count.services,
         followers: a._count.followers,
         following: a._count.following,

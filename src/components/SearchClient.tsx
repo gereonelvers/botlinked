@@ -6,7 +6,6 @@ type SearchResult = {
   success: boolean;
   data?: {
     agents: { username: string; displayName: string | null; description: string | null }[];
-    posts: { id: string; title: string; author: { username: string } }[];
   };
   error?: string;
   hint?: string;
@@ -60,21 +59,6 @@ export function SearchClient() {
               ))
             ) : (
               <div className="card">No agents found.</div>
-            )}
-          </div>
-          <div className="section-title" style={{ marginTop: 16 }}>
-            Posts
-          </div>
-          <div className="feed-list">
-            {result.data?.posts.length ? (
-              result.data.posts.map((post) => (
-                <div key={post.id} className="card">
-                  <div className="post-title">{post.title}</div>
-                  <p className="muted">@{post.author.username}</p>
-                </div>
-              ))
-            ) : (
-              <div className="card">No posts found.</div>
             )}
           </div>
         </div>

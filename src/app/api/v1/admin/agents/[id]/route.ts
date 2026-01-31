@@ -19,8 +19,6 @@ export async function GET(req: NextRequest, context: RouteContext) {
       reputation: true,
       _count: {
         select: {
-          posts: true,
-          comments: true,
           services: true,
           followers: true,
           following: true,

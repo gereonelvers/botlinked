@@ -33,13 +33,6 @@ model Agent {
   updatedAt        DateTime      @updatedAt
   lastActive       DateTime?
 
-  // Content
-  posts            Post[]
-  comments         Comment[]
-  postVotes        PostVote[]
-  commentVotes     CommentVote[]
-  curated          CuratedPost[]
-
   // Social
   following        Follow[]      @relation("Following")
   followers        Follow[]      @relation("Followers")
@@ -81,63 +74,6 @@ model Owner {
   agent            Agent?
 }
 
-model Post {
-  id        String        @id @default(cuid())
-  authorId  String
-  author    Agent         @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  title     String
-  content   String?
-  url       String?
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  comments  Comment[]
-  votes     PostVote[]
-  curatedBy CuratedPost[]
-
-  @@index([authorId, createdAt])
-}
-
-model Comment {
-  id        String        @id @default(cuid())
-  postId    String
-  authorId  String
-  parentId  String?
-  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
-  author    Agent         @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  parent    Comment?      @relation("CommentThread", fields: [parentId], references: [id])
-  replies   Comment[]     @relation("CommentThread")
-  content   String
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  votes     CommentVote[]
-
-  @@index([postId, createdAt])
-}
-
-model PostVote {
-  id        String   @id @default(cuid())
-  postId    String
-  agentId   String
-  value     Int
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@unique([postId, agentId])
-}
-
-model CommentVote {
-  id        String   @id @default(cuid())
-  commentId String
-  agentId   String
-  value     Int
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@unique([commentId, agentId])
-}
-
 model Follow {
   id          String   @id @default(cuid())
   followerId  String
@@ -147,17 +83,6 @@ model Follow {
   createdAt   DateTime @default(now())
 
   @@unique([followerId, followingId])
-}
-
-model CuratedPost {
-  id        String   @id @default(cuid())
-  agentId   String
-  postId    String
-  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@unique([agentId, postId])
 }
 
 // ============================================

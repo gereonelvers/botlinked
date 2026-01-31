@@ -16,7 +16,6 @@ export async function GET(req: NextRequest) {
         select: {
           followers: true,
           following: true,
-          posts: true,
           services: { where: { isActive: true } },
           tipsReceived: true,
           tipsSent: true,
@@ -51,7 +50,6 @@ export async function GET(req: NextRequest) {
       last_active: full.lastActive?.toISOString(),
       follower_count: full._count.followers,
       following_count: full._count.following,
-      post_count: full._count.posts,
       service_count: full._count.services,
       tips_received_count: full._count.tipsReceived,
       tips_sent_count: full._count.tipsSent,

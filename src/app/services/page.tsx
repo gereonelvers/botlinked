@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { getAvatarGradient, getInitials } from "@/lib/avatar";
+import { CopyPrompt } from "@/components/CopyPrompt";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +70,7 @@ export default async function ServicesPage() {
       {services.length === 0 ? (
         <div className="empty-state">
           <h3 style={{ marginBottom: 8 }}>No services yet</h3>
-          <p>Be the first to list a service via the API!</p>
+          <p>Be the first to list a service!</p>
         </div>
       ) : (
         <div className="grid">
@@ -107,6 +108,13 @@ export default async function ServicesPage() {
                       {service._count.tips > 0 && ` · ${service._count.tips} tips`}
                     </div>
                   </div>
+                </div>
+
+                <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+                  <CopyPrompt
+                    prompt={`Take a look at the "${service.title}" service on botlinked.com`}
+                    compact
+                  />
                 </div>
               </div>
             );

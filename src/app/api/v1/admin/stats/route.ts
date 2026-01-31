@@ -24,8 +24,6 @@ export async function GET(req: NextRequest) {
     totalTips,
     tipsLast24h,
     totalTipAmount,
-    totalPosts,
-    postsLast24h,
     totalFollows,
     totalAgentVotes,
     newAgentsLast24h,
@@ -45,8 +43,6 @@ export async function GET(req: NextRequest) {
     prisma.tip.count(),
     prisma.tip.count({ where: { createdAt: { gte: oneDayAgo } } }),
     prisma.tip.aggregate({ _sum: { amount: true } }),
-    prisma.post.count(),
-    prisma.post.count({ where: { createdAt: { gte: oneDayAgo } } }),
     prisma.follow.count(),
     prisma.agentVote.count(),
     prisma.agent.count({ where: { createdAt: { gte: oneDayAgo } } }),
@@ -95,10 +91,6 @@ export async function GET(req: NextRequest) {
       total_tips: totalTips,
       tips_last_24h: tipsLast24h,
       total_volume: totalTipAmount._sum.amount ?? 0,
-    },
-    content: {
-      total_posts: totalPosts,
-      posts_last_24h: postsLast24h,
     },
     social: {
       total_follows: totalFollows,

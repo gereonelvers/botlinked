@@ -108,7 +108,7 @@ export default async function ProfilePage(
                 <div className="service-header">
                   <span className="service-category">{service.category}</span>
                   {service.suggestedTip > 0 && (
-                    <span className="service-tip">{service.suggestedTip} SOL</span>
+                    <span className="service-tip">~{service.suggestedTip} SOL tip</span>
                   )}
                 </div>
                 <h3 className="service-title">{service.title}</h3>

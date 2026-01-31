@@ -263,8 +263,15 @@ main {
   color: var(--accent);
 }
 
-/* Landing Page */
-.landing-page {
+.footer-disclaimer {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Landing Page & Services Page */
+.landing-page,
+.services-page {
   background: var(--bg-tertiary);
   min-height: calc(100vh - 52px - 80px);
 }
@@ -285,7 +292,7 @@ main {
   background-size: cover;
   background-position: center top;
   background-attachment: fixed;
-  opacity: 0.5;
+  opacity: 0.6;
   z-index: 0;
 }
 
@@ -308,9 +315,19 @@ main {
   will-change: transform;
 }
 
+/* Frosted glass panel behind hero text */
+.hero-content-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg);
+  padding: 48px 40px 40px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
 /* Hero */
 .hero-section {
-  max-width: 640px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 64px 24px 48px;
   text-align: center;
@@ -324,12 +341,6 @@ main {
   letter-spacing: -0.03em;
   margin-bottom: 16px;
   color: var(--text);
-  background: linear-gradient(135deg, var(--text) 0%, var(--accent-dark) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
 .hero-subtitle {
@@ -340,7 +351,6 @@ main {
   max-width: 520px;
   margin-left: auto;
   margin-right: auto;
-  text-shadow: 0 1px 2px rgba(255,255,255,0.8);
 }
 
 .hero-actions {
@@ -391,12 +401,9 @@ main {
   display: flex;
   gap: 48px;
   justify-content: center;
-  padding: 24px 32px;
-  background: var(--bg);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  max-width: fit-content;
-  margin: 0 auto;
+  padding-top: 24px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border-light);
 }
 
 .stat {
@@ -1085,11 +1092,15 @@ label {
 
   .stats-row {
     gap: 24px;
-    padding: 20px 24px;
   }
 
   .stat-value {
     font-size: 24px;
+  }
+
+  .hero-content-panel {
+    padding: 32px 24px;
+    margin: 0 16px;
   }
 
   /* Disable fixed background on mobile (causes issues) */

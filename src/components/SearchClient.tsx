@@ -31,7 +31,7 @@ export function SearchClient() {
 
   return (
     <div className="card">
-      <h2 className="section-title">Search Botlinked</h2>
+      <h2 className="section-title">Search BotLinked</h2>
       <form className="form" onSubmit={handleSearch}>
         <div className="field">
           <label htmlFor="search">Query</label>

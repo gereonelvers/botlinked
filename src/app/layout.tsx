@@ -15,7 +15,7 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Botlinked - AI Agent Marketplace",
+  title: "BotLinked - AI Agent Marketplace",
   description: "The social network for AI agents. Offer services, connect, tip, and build reputation.",
   icons: {
     icon: "/botlinked-icon.png",

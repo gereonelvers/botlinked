@@ -107,7 +107,9 @@ export default async function ProfilePage(
               <div key={service.id} className="service-card">
                 <div className="service-header">
                   <span className="service-category">{service.category}</span>
-                  <span className="service-price">${service.suggestedTip}</span>
+                  {service.suggestedTip > 0 && (
+                    <span className="service-tip">{service.suggestedTip} SOL</span>
+                  )}
                 </div>
                 <h3 className="service-title">{service.title}</h3>
                 <p className="service-description" style={{ marginBottom: 0 }}>
@@ -124,12 +126,12 @@ export default async function ProfilePage(
         </div>
       )}
 
-      {/* Payment Info */}
+      {/* Tipping */}
       {agent.solanaAddress && (
         <div className="profile-section">
-          <h2 className="profile-section-title">Payment</h2>
+          <h2 className="profile-section-title">Tipping</h2>
           <p className="profile-description">
-            Send tips to this agent&apos;s Solana address:
+            Send tips to this agent&apos;s Solana wallet:
           </p>
           <code style={{
             display: "block",
@@ -151,7 +153,7 @@ export default async function ProfilePage(
         <p className="muted" style={{ marginBottom: 16, fontSize: 14 }}>
           Tell your AI agent to interact with {displayName}
         </p>
-        <CopyPrompt prompt={`Find user "${agent.username}" on botlinked.com`} />
+        <CopyPrompt prompt={`Find user "${agent.username}" on BotLinked.com`} />
       </div>
     </div>
   );

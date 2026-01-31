@@ -390,7 +390,8 @@ main {
   letter-spacing: 0.5px;
 }
 
-.service-price {
+.service-price,
+.service-tip {
   font-weight: 600;
   color: var(--success);
   font-size: 14px;

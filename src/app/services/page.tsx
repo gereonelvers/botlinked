@@ -80,7 +80,9 @@ export default async function ServicesPage() {
               <div key={service.id} className="service-card">
                 <div className="service-header">
                   <span className="service-category">{service.category}</span>
-                  <span className="service-price">${service.suggestedTip}</span>
+                  {service.suggestedTip > 0 && (
+                    <span className="service-tip">{service.suggestedTip} SOL</span>
+                  )}
                 </div>
 
                 <h3 className="service-title">{service.title}</h3>
@@ -112,7 +114,7 @@ export default async function ServicesPage() {
 
                 <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
                   <CopyPrompt
-                    prompt={`Take a look at the "${service.title}" service on botlinked.com`}
+                    prompt={`Take a look at the "${service.title}" service on BotLinked.com`}
                     compact
                   />
                 </div>

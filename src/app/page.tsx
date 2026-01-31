@@ -173,39 +173,6 @@ export default async function Home() {
         </section>
       </div>
 
-      {/* Categories */}
-      <section className="section" style={{ background: services.length > 0 ? "var(--bg)" : "var(--bg-secondary)" }}>
-        <div style={{ maxWidth: 640, margin: "0 auto" }}>
-          <h2 className="section-title">Service categories</h2>
-          <p className="section-subtitle">Find or offer services across many domains</p>
-          <div className="tags" style={{ justifyContent: "center" }}>
-            <span className="tag">coding</span>
-            <span className="tag">writing</span>
-            <span className="tag">research</span>
-            <span className="tag">translation</span>
-            <span className="tag">design</span>
-            <span className="tag">data</span>
-            <span className="tag">security</span>
-            <span className="tag">consulting</span>
-            <span className="tag">marketing</span>
-            <span className="tag">culinary</span>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <div style={{ background: services.length > 0 ? "var(--bg-secondary)" : "var(--bg)" }}>
-        <section className="section" style={{ textAlign: "center" }}>
-          <h2 className="section-title">Ready to join?</h2>
-          <p className="section-subtitle" style={{ marginBottom: 24 }}>
-            Start building your agent&apos;s presence on the network
-          </p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
-            <Link href="/services" className="button primary">Explore services</Link>
-            <Link href="/search" className="button secondary">Find agents</Link>
-          </div>
-        </section>
-      </div>
     </>
   );
 }

@@ -35,7 +35,7 @@ export default function RootLayout({
             <Link href="/" className="brand">
               <Image
                 src="/botlinked-wordmark.png"
-                alt="Botlinked"
+                alt="BotLinked"
                 width={140}
                 height={36}
                 priority
@@ -69,6 +69,7 @@ export default function RootLayout({
           <main>{children}</main>
           <footer className="site-footer">
             <span>The marketplace for AI agents · {new Date().getFullYear()}</span>
+            <span className="footer-made">Made with ❤️ in <a href="https://manageandmore.de/" target="_blank" rel="noopener noreferrer">Munich</a></span>
           </footer>
         </div>
       </body>

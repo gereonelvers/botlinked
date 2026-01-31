@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { getAvatarGradient, getInitials } from "@/lib/avatar";
 
 export const dynamic = "force-dynamic";
 
@@ -40,10 +41,9 @@ export default async function ServicesPage() {
   ]);
 
   return (
-    <div style={{ padding: "40px clamp(20px, 5vw, 80px)" }}>
-      <div className="section-header" style={{ marginBottom: 40 }}>
-        <div className="section-label">Marketplace</div>
-        <h1 className="section-title">Browse Services</h1>
+    <div className="section">
+      <div style={{ marginBottom: 32 }}>
+        <h1 className="section-title" style={{ fontSize: 24 }}>Services Marketplace</h1>
         <p className="section-subtitle">
           Discover services offered by AI agents across the network
         </p>
@@ -51,16 +51,15 @@ export default async function ServicesPage() {
 
       {/* Categories */}
       {categories.length > 0 && (
-        <div style={{ marginBottom: 40 }}>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div style={{ marginBottom: 32 }}>
+          <div className="tags">
+            <span className="tag" style={{ background: "var(--accent)", color: "white" }}>
+              All ({services.length})
+            </span>
             {categories.map((cat) => (
-              <div
-                key={cat.category}
-                className="tag"
-                style={{ cursor: "pointer" }}
-              >
+              <span key={cat.category} className="tag">
                 {cat.category} ({cat._count.id})
-              </div>
+              </span>
             ))}
           </div>
         </div>
@@ -68,64 +67,50 @@ export default async function ServicesPage() {
 
       {/* Services Grid */}
       {services.length === 0 ? (
-        <div className="card" style={{ textAlign: "center", padding: 60 }}>
-          <p style={{ fontSize: 18, marginBottom: 16 }}>No services yet</p>
-          <p className="muted">Be the first to list a service via the API!</p>
+        <div className="empty-state">
+          <h3 style={{ marginBottom: 8 }}>No services yet</h3>
+          <p>Be the first to list a service via the API!</p>
         </div>
       ) : (
-        <div className="feature-grid">
-          {services.map((service) => (
-            <div key={service.id} className="feature-card">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
-                <span className="tag">{service.category}</span>
-                <span style={{ color: "var(--success)", fontWeight: 600, fontSize: 18 }}>
-                  ${service.suggestedTip}
-                </span>
-              </div>
+        <div className="grid">
+          {services.map((service) => {
+            const displayName = service.agent.displayName ?? service.agent.username;
+            return (
+              <div key={service.id} className="service-card">
+                <div className="service-header">
+                  <span className="service-category">{service.category}</span>
+                  <span className="service-price">${service.suggestedTip}</span>
+                </div>
 
-              <h3 className="feature-title">{service.title}</h3>
-              <p className="feature-description" style={{ marginBottom: 20 }}>
-                {service.description.length > 150
-                  ? service.description.substring(0, 150) + "..."
-                  : service.description}
-              </p>
+                <h3 className="service-title">{service.title}</h3>
+                <p className="service-description">
+                  {service.description.length > 120
+                    ? service.description.substring(0, 120) + "..."
+                    : service.description}
+                </p>
 
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                paddingTop: 16,
-                borderTop: "1px solid var(--line)"
-              }}>
-                <Link
-                  href={`/u/${service.agent.username}`}
-                  style={{ display: "flex", alignItems: "center", gap: 10 }}
-                >
-                  <div style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: "50%",
-                    background: "var(--accent-soft)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 14,
-                  }}>
-                    {service.agent.displayName?.[0] || service.agent.username[0].toUpperCase()}
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 500, fontSize: 14 }}>
-                      {service.agent.displayName || service.agent.username}
+                <div className="service-agent">
+                  <Link href={`/u/${service.agent.username}`}>
+                    <div
+                      className="agent-avatar"
+                      style={{ background: getAvatarGradient(service.agent.username) }}
+                    >
+                      {getInitials(displayName, service.agent.username)}
                     </div>
-                    <div style={{ fontSize: 12, color: "var(--muted)" }}>
-                      ⭐ {service.agent.reputation?.score?.toFixed(1) || "1.0"}
+                  </Link>
+                  <div className="agent-info">
+                    <Link href={`/u/${service.agent.username}`} className="agent-name">
+                      {displayName}
+                    </Link>
+                    <div className="agent-meta">
+                      {service.agent.reputation?.score?.toFixed(1) || "1.0"} reputation
                       {service._count.tips > 0 && ` · ${service._count.tips} tips`}
                     </div>
                   </div>
-                </Link>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

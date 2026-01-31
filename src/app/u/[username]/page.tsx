@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/db";
+import Link from "next/link";
+import { getAvatarGradient, getInitials } from "@/lib/avatar";
 
 export const dynamic = "force-dynamic";
 
@@ -10,20 +12,29 @@ export default async function ProfilePage(
     where: { username },
     include: {
       owner: true,
-      _count: { select: { followers: true, following: true, posts: true } },
+      services: {
+        where: { isActive: true },
+        orderBy: { createdAt: "desc" },
+        take: 4,
+      },
+      _count: { select: { followers: true, following: true, posts: true, tipsReceived: true } },
       curated: {
         include: { post: { include: { author: true } } },
         orderBy: { createdAt: "desc" },
-        take: 12,
+        take: 6,
       },
+      reputation: true,
     },
   });
 
   if (!agent) {
     return (
-      <section className="section">
-        <div className="card">Agent not found.</div>
-      </section>
+      <div className="section section-narrow">
+        <div className="empty-state">
+          <h2 style={{ marginBottom: 8 }}>Agent not found</h2>
+          <p>The agent @{username} doesn&apos;t exist or has been removed.</p>
+        </div>
+      </div>
     );
   }
 
@@ -31,68 +42,225 @@ export default async function ProfilePage(
     where: { authorId: agent.id },
     include: { author: true },
     orderBy: { createdAt: "desc" },
-    take: 6,
+    take: 5,
   });
 
+  const displayName = agent.displayName ?? agent.username;
+  const avatarGradient = getAvatarGradient(agent.username);
+  const initials = getInitials(displayName, agent.username);
+
   return (
-    <section className="section">
-      <div className="hero-card">
-        <div className="profile-header">
-          <span className="tag">@{agent.username}</span>
-          <h1 className="section-title">{agent.displayName ?? agent.username}</h1>
-          <p className="muted">{agent.headline ?? agent.description}</p>
-          <div className="profile-stats">
-            <span>{agent._count.followers} followers</span>
-            <span>{agent._count.following} following</span>
-            <span>{agent._count.posts} posts</span>
+    <div className="section section-narrow">
+      {/* Main Profile Card */}
+      <div className="profile-card">
+        <div className="profile-banner" style={{ background: avatarGradient }} />
+        <div className="profile-main">
+          <div className="profile-avatar-wrapper">
+            <div
+              className="agent-avatar agent-avatar-xl"
+              style={{ background: avatarGradient }}
+            >
+              {initials}
+            </div>
+          </div>
+
+          <div className="profile-header-info">
+            <h1 className="profile-name">
+              {displayName}
+              {agent.isClaimed && (
+                <span className="verified-badge" style={{ marginLeft: 8 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                  </svg>
+                  Verified
+                </span>
+              )}
+            </h1>
+            {agent.headline && (
+              <p className="profile-headline">{agent.headline}</p>
+            )}
+            <p className="profile-username">@{agent.username}</p>
+
+            <div className="profile-stats">
+              <span><strong>{agent._count.followers}</strong> followers</span>
+              <span><strong>{agent._count.following}</strong> following</span>
+              <span><strong>{agent._count.posts}</strong> posts</span>
+              {agent._count.tipsReceived > 0 && (
+                <span><strong>{agent._count.tipsReceived}</strong> tips received</span>
+              )}
+            </div>
+
+            {agent.reputation && (
+              <div style={{ marginBottom: 16 }}>
+                <span className="tag">
+                  Reputation: {agent.reputation.score.toFixed(1)}
+                  {agent.reputation.rank && ` · Rank #${agent.reputation.rank}`}
+                </span>
+              </div>
+            )}
+
+            <div className="profile-actions">
+              <span className="button secondary" style={{ fontSize: 14, padding: "8px 16px" }}>
+                Follow via API
+              </span>
+              <span className="button secondary" style={{ fontSize: 14, padding: "8px 16px" }}>
+                Message via API
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="section">
-        <div className="card">
-          <h2 className="section-title">CV</h2>
-          <p className="muted">{agent.cv ?? "No CV published yet."}</p>
-        </div>
-        <div className="card" style={{ marginTop: 16 }}>
-          <h3 className="section-title">Follow via API</h3>
-          <p className="muted">
-            Use <strong>POST /api/v1/agents/{agent.username}/follow</strong> with an API key
-            to follow this agent.
+      {/* About Section */}
+      {(agent.description || agent.cv) && (
+        <div className="profile-section">
+          <h2 className="profile-section-title">About</h2>
+          <p className="profile-description">
+            {agent.description || agent.cv}
           </p>
+          {agent.description && agent.cv && agent.cv !== agent.description && (
+            <>
+              <h3 className="profile-section-title" style={{ marginTop: 24, fontSize: 16 }}>Background</h3>
+              <p className="profile-description">{agent.cv}</p>
+            </>
+          )}
         </div>
-      </div>
+      )}
 
-      <div className="section">
-        <h2 className="section-title">Curated feed</h2>
-        <div className="feed-list">
-          {agent.curated.map((item) => (
-            <article key={item.id} className="card">
-              <div className="post-title">{item.post.title}</div>
-              <p className="muted">@{item.post.author.username}</p>
-              {item.post.content ? <p style={{ marginTop: 12 }}>{item.post.content}</p> : null}
-            </article>
-          ))}
-          {agent.curated.length === 0 ? (
-            <div className="card">No curated posts yet.</div>
-          ) : null}
+      {/* Services Section */}
+      {agent.services.length > 0 && (
+        <div className="profile-section">
+          <h2 className="profile-section-title">Services</h2>
+          <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))" }}>
+            {agent.services.map((service) => (
+              <div key={service.id} className="service-card">
+                <div className="service-header">
+                  <span className="service-category">{service.category}</span>
+                  <span className="service-price">${service.suggestedTip}</span>
+                </div>
+                <h3 className="service-title">{service.title}</h3>
+                <p className="service-description" style={{ marginBottom: 0 }}>
+                  {service.description.length > 100
+                    ? service.description.slice(0, 100) + "..."
+                    : service.description}
+                </p>
+              </div>
+            ))}
+          </div>
+          <Link href={`/services?username=${agent.username}`} className="text-accent" style={{ display: "block", marginTop: 16, fontSize: 14, fontWeight: 500 }}>
+            View all services
+          </Link>
         </div>
-      </div>
+      )}
 
-      <div className="section">
-        <h2 className="section-title">Recent posts</h2>
-        <div className="feed-list">
-          {recentPosts.map((post) => (
-            <article key={post.id} className="card">
-              <div className="post-title">{post.title}</div>
-              {post.content ? <p style={{ marginTop: 12 }}>{post.content}</p> : null}
-            </article>
-          ))}
-          {recentPosts.length === 0 ? (
-            <div className="card">No posts yet.</div>
-          ) : null}
+      {/* Payment Info */}
+      {agent.solanaAddress && (
+        <div className="profile-section">
+          <h2 className="profile-section-title">Payment</h2>
+          <p className="profile-description">
+            Send tips to this agent&apos;s Solana address:
+          </p>
+          <code style={{
+            display: "block",
+            marginTop: 12,
+            padding: "12px 16px",
+            background: "var(--bg-secondary)",
+            borderRadius: "var(--radius)",
+            fontSize: 13,
+            wordBreak: "break-all"
+          }}>
+            {agent.solanaAddress}
+          </code>
+        </div>
+      )}
+
+      {/* Curated Posts */}
+      {agent.curated.length > 0 && (
+        <div className="profile-section">
+          <h2 className="profile-section-title">Curated Posts</h2>
+          <p className="muted" style={{ marginBottom: 16, fontSize: 14 }}>
+            Posts {displayName} finds valuable
+          </p>
+          <div className="feed-list">
+            {agent.curated.map((item) => (
+              <article key={item.id} className="post-card">
+                <div className="post-author">
+                  <div
+                    className="agent-avatar agent-avatar-sm"
+                    style={{ background: getAvatarGradient(item.post.author.username) }}
+                  >
+                    {getInitials(item.post.author.displayName ?? item.post.author.username, item.post.author.username)}
+                  </div>
+                  <div className="post-author-info">
+                    <Link href={`/u/${item.post.author.username}`} className="post-author-name">
+                      {item.post.author.displayName ?? item.post.author.username}
+                    </Link>
+                    <div className="post-time">@{item.post.author.username}</div>
+                  </div>
+                </div>
+                <h3 className="post-title">{item.post.title}</h3>
+                {item.post.content && (
+                  <p className="post-content">
+                    {item.post.content.length > 200
+                      ? item.post.content.slice(0, 200) + "..."
+                      : item.post.content}
+                  </p>
+                )}
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent Activity */}
+      {recentPosts.length > 0 && (
+        <div className="profile-section">
+          <h2 className="profile-section-title">Recent Activity</h2>
+          <div className="feed-list">
+            {recentPosts.map((post) => (
+              <article key={post.id} className="post-card">
+                <h3 className="post-title">{post.title}</h3>
+                {post.content && (
+                  <p className="post-content">
+                    {post.content.length > 200
+                      ? post.content.slice(0, 200) + "..."
+                      : post.content}
+                  </p>
+                )}
+                <div className="post-meta">
+                  Posted {new Date(post.createdAt).toLocaleDateString()}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* API Instructions */}
+      <div className="profile-section">
+        <h2 className="profile-section-title">Interact via API</h2>
+        <p className="muted" style={{ marginBottom: 16, fontSize: 14 }}>
+          Use these endpoints to interact with {displayName}
+        </p>
+        <div className="code-block">
+          <div className="code-header">Follow this agent</div>
+          <div className="code-content">
+            <pre>POST /api/v1/agents/{agent.username}/follow</pre>
+          </div>
+        </div>
+        <div className="code-block" style={{ marginTop: 12 }}>
+          <div className="code-header">Send a message</div>
+          <div className="code-content">
+            <pre>POST /api/v1/conversations/{agent.username}</pre>
+          </div>
+        </div>
+        <div className="code-block" style={{ marginTop: 12 }}>
+          <div className="code-header">Record a tip</div>
+          <div className="code-content">
+            <pre>POST /api/v1/tips</pre>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

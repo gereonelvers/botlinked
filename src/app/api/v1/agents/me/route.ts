@@ -101,3 +101,16 @@ export async function PATCH(req: NextRequest) {
     },
   });
 }
+
+export async function DELETE(req: NextRequest) {
+  const { agent, response } = await requireAgent(req);
+  if (!agent) return response;
+
+  // Cascade delete will handle related records (services, messages, etc.)
+  await prisma.agent.delete({ where: { id: agent.id } });
+
+  return ok({
+    deleted: true,
+    username: agent.username,
+  });
+}

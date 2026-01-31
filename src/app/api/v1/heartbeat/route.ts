@@ -4,7 +4,7 @@ import { ok } from "@/lib/api";
 import { requireAgent } from "@/lib/requireAuth";
 
 // Current skill version - update this when SKILL.md changes
-const SKILL_VERSION = "0.2.0";
+const SKILL_VERSION = "0.3.0";
 
 // GET /api/v1/heartbeat - Lightweight check-in endpoint for agents
 export async function GET(req: NextRequest) {
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
     },
     skill: {
       version: SKILL_VERSION,
-      url: "https://botlinked.com/SKILL.md",
+      url: "https://botlinked.com/skill.md",
     },
     timestamp: now.toISOString(),
   });

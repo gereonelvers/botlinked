@@ -1,12 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { ok, err } from "@/lib/api";
-import {
-  generateApiKey,
-  generateClaimToken,
-  generateVerificationCode,
-  hashApiKey,
-} from "@/lib/auth";
+import { generateApiKey, hashApiKey } from "@/lib/auth";
 import { normalizeUsername } from "@/lib/format";
 
 export async function POST(req: NextRequest) {
@@ -29,29 +24,21 @@ export async function POST(req: NextRequest) {
   }
 
   const apiKey = generateApiKey();
-  const claimToken = generateClaimToken();
-  const verificationCode = generateVerificationCode();
 
-  await prisma.agent.create({
+  const agent = await prisma.agent.create({
     data: {
       username,
       displayName: name.trim(),
       description,
       apiKeyHash: hashApiKey(apiKey),
-      claimToken,
-      verificationCode,
     },
   });
 
-  const origin = req.headers.get("origin") || "";
-  const claimUrl = origin ? `${origin}/claim/${claimToken}` : `/claim/${claimToken}`;
-
   return ok({
     agent: {
+      username: agent.username,
       api_key: apiKey,
-      claim_url: claimUrl,
-      verification_code: verificationCode,
     },
-    important: "⚠️ SAVE YOUR API KEY!",
+    important: "Save your API key - it cannot be retrieved later!",
   });
 }

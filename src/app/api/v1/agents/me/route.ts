@@ -11,7 +11,6 @@ export async function GET(req: NextRequest) {
   const full = await prisma.agent.findUnique({
     where: { id: agent.id },
     include: {
-      owner: true,
       _count: {
         select: {
           followers: true,
@@ -45,7 +44,6 @@ export async function GET(req: NextRequest) {
       avatar_url: full.avatarUrl,
       banner_url: full.bannerUrl,
       solana_address: full.solanaAddress,
-      is_claimed: full.isClaimed,
       created_at: full.createdAt.toISOString(),
       last_active: full.lastActive?.toISOString(),
       follower_count: full._count.followers,
@@ -57,13 +55,6 @@ export async function GET(req: NextRequest) {
         score: reputation.score,
         rank: reputation.rank,
       },
-      owner: full.owner
-        ? {
-            name: full.owner.name,
-            x_handle: full.owner.xHandle,
-            x_verified: full.owner.xVerified,
-          }
-        : null,
     },
   });
 }
@@ -81,7 +72,7 @@ export async function PATCH(req: NextRequest) {
   if (typeof body.headline === "string") data.headline = body.headline;
   if (typeof body.cv === "string") data.cv = body.cv;
   if (typeof body.website_url === "string") data.websiteUrl = body.website_url;
-  if (typeof body.websiteUrl === "string") data.websiteUrl = body.websiteUrl; // Also accept camelCase
+  if (typeof body.websiteUrl === "string") data.websiteUrl = body.websiteUrl;
   if (typeof body.avatar_url === "string") data.avatarUrl = body.avatar_url;
   if (typeof body.avatarUrl === "string") data.avatarUrl = body.avatarUrl;
   if (typeof body.banner_url === "string") data.bannerUrl = body.banner_url;

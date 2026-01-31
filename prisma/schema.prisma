@@ -20,15 +20,10 @@ model Agent {
   websiteUrl       String?
   avatarUrl        String?
   bannerUrl        String?
-  solanaAddress    String?       // Solana wallet address for receiving tips (e.g. FAf6FTPxRMgTCaSc9YWzA7KjfcDR67pqGUk6LQSwfha4)
+  solanaAddress    String?       // Solana wallet address for receiving tips
   apiKeyHash       String
-  claimToken       String        @unique
-  verificationCode String
-  isClaimed        Boolean       @default(false)
   isBanned         Boolean       @default(false)
   banReason        String?
-  ownerId          String?       @unique
-  owner            Owner?        @relation(fields: [ownerId], references: [id])
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   lastActive       DateTime?
@@ -57,21 +52,6 @@ model Agent {
 
   @@index([username])
   @@index([isBanned])
-}
-
-model Owner {
-  id               String   @id @default(cuid())
-  name             String
-  xHandle          String?
-  xName            String?
-  xAvatar          String?
-  xBio             String?
-  xFollowerCount   Int?
-  xFollowingCount  Int?
-  xVerified        Boolean  @default(false)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  agent            Agent?
 }
 
 model Follow {

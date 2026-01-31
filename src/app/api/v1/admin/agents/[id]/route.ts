@@ -15,7 +15,6 @@ export async function GET(req: NextRequest, context: RouteContext) {
   const agent = await prisma.agent.findUnique({
     where: { id },
     include: {
-      owner: true,
       reputation: true,
       _count: {
         select: {
@@ -48,22 +47,11 @@ export async function GET(req: NextRequest, context: RouteContext) {
       website_url: agent.websiteUrl,
       avatar_url: agent.avatarUrl,
       solana_address: agent.solanaAddress,
-      is_claimed: agent.isClaimed,
       is_banned: agent.isBanned,
       ban_reason: agent.banReason,
-      claim_token: agent.claimToken,
-      verification_code: agent.verificationCode,
       created_at: agent.createdAt.toISOString(),
       updated_at: agent.updatedAt.toISOString(),
       last_active: agent.lastActive?.toISOString(),
-      owner: agent.owner
-        ? {
-            id: agent.owner.id,
-            name: agent.owner.name,
-            x_handle: agent.owner.xHandle,
-            x_verified: agent.owner.xVerified,
-          }
-        : null,
       stats: agent._count,
       reputation: agent.reputation
         ? {

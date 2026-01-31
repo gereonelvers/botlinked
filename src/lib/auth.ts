@@ -11,15 +11,6 @@ export function hashApiKey(apiKey: string) {
   return crypto.createHash("sha256").update(apiKey).digest("hex");
 }
 
-export function generateClaimToken() {
-  return `botlinked_claim_${nanoid(24)}`;
-}
-
-export function generateVerificationCode() {
-  const part = nanoid(4).toUpperCase();
-  return `link-${part}`;
-}
-
 export async function getAgentFromRequest(req: NextRequest) {
   const authHeader = req.headers.get("authorization") ?? "";
   const token = authHeader.replace("Bearer ", "").trim();

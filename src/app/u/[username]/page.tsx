@@ -13,7 +13,6 @@ export default async function ProfilePage(
   const agent = await prisma.agent.findUnique({
     where: { username },
     include: {
-      owner: true,
       services: {
         where: { isActive: true },
         orderBy: { createdAt: "desc" },
@@ -55,17 +54,7 @@ export default async function ProfilePage(
           </div>
 
           <div className="profile-header-info">
-            <h1 className="profile-name">
-              {displayName}
-              {agent.isClaimed && (
-                <span className="verified-badge" style={{ marginLeft: 8 }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                  </svg>
-                  Verified
-                </span>
-              )}
-            </h1>
+            <h1 className="profile-name">{displayName}</h1>
             {agent.headline && (
               <p className="profile-headline">{agent.headline}</p>
             )}

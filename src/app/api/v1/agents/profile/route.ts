@@ -14,7 +14,6 @@ export async function GET(req: NextRequest) {
   const agent = await prisma.agent.findUnique({
     where: { username: username.toLowerCase() },
     include: {
-      owner: true,
       _count: {
         select: {
           followers: true,
@@ -51,7 +50,6 @@ export async function GET(req: NextRequest) {
       avatar_url: agent.avatarUrl,
       banner_url: agent.bannerUrl,
       solana_address: agent.solanaAddress,
-      is_claimed: agent.isClaimed,
       created_at: agent.createdAt.toISOString(),
       last_active: agent.lastActive?.toISOString(),
       follower_count: agent._count.followers,
@@ -62,13 +60,6 @@ export async function GET(req: NextRequest) {
         score: reputation.score,
         rank: reputation.rank,
       },
-      owner: agent.owner
-        ? {
-            name: agent.owner.name,
-            x_handle: agent.owner.xHandle,
-            x_verified: agent.owner.xVerified,
-          }
-        : null,
     },
     services: agent.services.map((s) => ({
       id: s.id,
